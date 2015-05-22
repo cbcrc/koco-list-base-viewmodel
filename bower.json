@@ -1,0 +1,35 @@
+{
+  "name": "koco-list-base-viewmodel",
+  "version": "0.1.0",
+  "homepage": "https://github.com/cbcrc/koco-list-base-viewmodel",
+  "authors": [
+    "Maxime Séguin <maxime.forget-seguin@radio-canada.ca>"
+  ],
+  "description": "Koco base list view model",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "koco",
+    "koco-list",
+    "list-base-viewmodel",
+    "list-viewmodel"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "knockout": "~3.3.0",
+    "jquery": "~2.1.4",
+    "lodash": "~3.9.0",
+    "koco-object-utilities": "~0.1.1",
+    "koco-string-utilities": "~0.1.6",
+    "koco-mapping-utilities": "~0.1.1",
+    "koco-disposer": "~0.1.1"
+  }
+}
