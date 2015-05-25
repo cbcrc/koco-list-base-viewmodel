@@ -209,7 +209,7 @@ define([
 
             self.updateSearchArgumentsWithPagingArguments();
 
-            self.search();
+            return self.search();
         };
 
         ContentListBaseViewModel.prototype.addPropertiesToItems = function(items) {
