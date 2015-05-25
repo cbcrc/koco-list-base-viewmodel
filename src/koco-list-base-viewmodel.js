@@ -30,7 +30,6 @@ define([
                 defaultSearchArguments: {},
                 pageable: true
             };
-
             var defaultPagingArguments = {
                 orderByDirection: null,
                 orderBy: null,
@@ -83,7 +82,7 @@ define([
             var self = this;
 
             if (self.settings.pageable) {
-                updatePagingInfo(self, searchResult);
+                self.updatePagingInfo(searchResult);
             }
 
             self.totalNumberOfItems(self.getTotalNumberOfItemsFromSearchResult(searchResult));
@@ -259,7 +258,8 @@ define([
             };
         };
 
-        function updatePagingInfo(self, searchResult) {
+        ContentListBaseViewModel.prototype.updatePagingInfo = function(searchResult) {
+            var self = this;
             var pagingArguments = self.getUpdatedPagingArgumentsFromSearchResult(searchResult);
 
             self.pagingArguments(pagingArguments);
