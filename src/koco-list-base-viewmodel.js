@@ -30,18 +30,28 @@ define([
                 defaultSearchArguments: {},
                 pageable: true
             };
-            var defaultPagingArguments = {
-                orderByDirection: null,
-                orderBy: null,
-                pageNumber: null,
-                pageSize: null
-            };
-
+            
             self.disposer = new Disposer();
             self.apiResourceName = apiResourceName;
             self.api = api;
 
             self.settings = $.extend({}, defaultSettings, settings);
+
+            
+            if(settings.defaultPagingAttr){
+                var pagingAttr = {
+                    pageNumber: 'pageNumber',
+                    pageSize: 'pageSize',
+                    orderBy: 'orderBy',
+                    orderByDirection: 'orderByDirection'
+                };
+                self.settings.defaultPagingAttr = $.extend({},pagingAttr, settings.defaultPagingAttr);
+            }
+
+            var defaultPagingArguments = {};
+            _.each(self.settings.defaultPagingAttr, function(key, attr){
+                defaultPagingArguments[attr] = null;
+            })
 
             self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
             self.searchArguments = null;
@@ -164,7 +174,7 @@ define([
             var self = this;
 
             var pagingArguments = self.pagingArguments();
-            pagingArguments.pageNumber = null;
+            pagingArguments.[self.settings.defaultPagingAttr.page] = null;
 
             self.pagingArguments(pagingArguments);
         };
@@ -182,7 +192,7 @@ define([
             var pagingArguments = self.pagingArguments();
 
             //TODO: pageNumber == convention == not good
-            pagingArguments.pageNumber = (pagingArguments.pageNumber || 1) + 1;
+            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = (pagingArguments[self.settings.defaultPagingAttr.pageNumber] || 1) + 1;
             self.pagingArguments(pagingArguments);
 
             self.updateSearchArgumentsWithPagingArguments();
@@ -194,15 +204,15 @@ define([
             var self = this;
             var pagingArguments = self.pagingArguments();
 
-            if (stringUtilities.equalsIgnoreCase(pagingArguments.orderBy, newOrderBy)) {
-                if (stringUtilities.equalsIgnoreCase(pagingArguments.orderByDirection, 'ascending')) {
-                    pagingArguments.orderByDirection = 'descending';
+            if (stringUtilities.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
+                if (stringUtilities.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderByDirection], 'ascending')) {
+                    pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'descending';
                 } else {
-                    pagingArguments.orderByDirection = 'ascending';
+                    pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
                 }
             } else {
-                pagingArguments.orderByDirection = null;
-                pagingArguments.orderBy = newOrderBy;
+                pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = null;
+                pagingArguments[self.settings.defaultPagingAttr.orderBy] = newOrderBy;
             }
 
             self.pagingArguments(pagingArguments);
@@ -249,13 +259,13 @@ define([
 
         ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
             //var self = this;
+            var pagingArguments = {};
+            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = searchResult.pageNumber;
+            pagingArguments[self.settings.defaultPagingAttr.pageSize] = searchResult.pageSize;
+            pagingArguments[self.settings.defaultPagingAttr.orderBy] = searchResult.orderBy;
+            pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = searchResult.orderByDirection;
 
-            return {
-                pageNumber: searchResult.pageNumber,
-                pageSize: searchResult.pageSize,
-                orderBy: searchResult.orderBy,
-                orderByDirection: searchResult.orderByDirection
-            };
+            return pagingArguments;
         };
 
         ContentListBaseViewModel.prototype.updatePagingInfo = function(searchResult) {
