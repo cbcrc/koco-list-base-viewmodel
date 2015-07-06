@@ -49,7 +49,7 @@ define([
             }
 
             var defaultPagingArguments = {};
-            _.each(self.settings.defaultPagingAttr, function(key, attr){
+            _.each(self.settings.defaultPagingAttr, function(attr, key){
                 defaultPagingArguments[attr] = null;
             })
 
@@ -174,7 +174,7 @@ define([
             var self = this;
 
             var pagingArguments = self.pagingArguments();
-            pagingArguments.[self.settings.defaultPagingAttr.page] = null;
+            pagingArguments[self.settings.defaultPagingAttr.page] = null;
 
             self.pagingArguments(pagingArguments);
         };
@@ -258,12 +258,13 @@ define([
         };
 
         ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
-            //var self = this;
+            var self = this;
             var pagingArguments = {};
-            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = searchResult.pageNumber;
-            pagingArguments[self.settings.defaultPagingAttr.pageSize] = searchResult.pageSize;
-            pagingArguments[self.settings.defaultPagingAttr.orderBy] = searchResult.orderBy;
-            pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = searchResult.orderByDirection;
+            
+            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = searchResult[self.settings.defaultPagingAttr.pageNumber];
+            pagingArguments[self.settings.defaultPagingAttr.pageSize] = searchResult[self.settings.defaultPagingAttr.pageSize];
+            pagingArguments[self.settings.defaultPagingAttr.orderBy] = searchResult[self.settings.defaultPagingAttr.orderBy];
+            pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = searchResult[self.settings.defaultPagingAttr.orderByDirection];
 
             return pagingArguments;
         };
