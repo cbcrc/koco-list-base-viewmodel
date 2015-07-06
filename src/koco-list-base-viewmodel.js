@@ -28,28 +28,27 @@ define([
 
             var defaultSettings = {
                 defaultSearchArguments: {},
+                defaultPagingAttr: {},
                 pageable: true
             };
-            
+
             self.disposer = new Disposer();
             self.apiResourceName = apiResourceName;
             self.api = api;
 
             self.settings = $.extend({}, defaultSettings, settings);
 
-            
-            if(settings.defaultPagingAttr){
-                var pagingAttr = {
-                    pageNumber: 'pageNumber',
-                    pageSize: 'pageSize',
-                    orderBy: 'orderBy',
-                    orderByDirection: 'orderByDirection'
-                };
-                self.settings.defaultPagingAttr = $.extend({},pagingAttr, settings.defaultPagingAttr);
-            }
+            var pagingAttr = {
+                pageNumber: 'pageNumber',
+                pageSize: 'pageSize',
+                orderBy: 'orderBy',
+                orderByDirection: 'orderByDirection'
+            };
 
+            self.settings.defaultPagingAttr = $.extend({}, pagingAttr, self.settings.defaultPagingAttr);
+            
             var defaultPagingArguments = {};
-            _.each(self.settings.defaultPagingAttr, function(attr, key){
+            _.each(self.settings.defaultPagingAttr, function(attr, key) {
                 defaultPagingArguments[attr] = null;
             })
 
@@ -174,7 +173,7 @@ define([
             var self = this;
 
             var pagingArguments = self.pagingArguments();
-            pagingArguments[self.settings.defaultPagingAttr.page] = null;
+            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = null;
 
             self.pagingArguments(pagingArguments);
         };
@@ -260,7 +259,7 @@ define([
         ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
             var self = this;
             var pagingArguments = {};
-            
+
             pagingArguments[self.settings.defaultPagingAttr.pageNumber] = searchResult[self.settings.defaultPagingAttr.pageNumber];
             pagingArguments[self.settings.defaultPagingAttr.pageSize] = searchResult[self.settings.defaultPagingAttr.pageSize];
             pagingArguments[self.settings.defaultPagingAttr.orderBy] = searchResult[self.settings.defaultPagingAttr.orderBy];
