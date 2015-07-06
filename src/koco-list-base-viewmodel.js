@@ -258,9 +258,8 @@ define([
 
         ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
             var self = this;
-            var pagingArguments = self.pagingArguments();
             
-            return $.extend({}, pagingArguments, searchResult);
+            return self.pagingArguments();
         };
 
         ContentListBaseViewModel.prototype.updatePagingInfo = function(searchResult) {
