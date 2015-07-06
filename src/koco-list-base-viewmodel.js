@@ -28,7 +28,6 @@ define([
 
             var defaultSettings = {
                 defaultSearchArguments: {},
-                defaultPagingAttr: {},
                 pageable: true
             };
 
@@ -46,7 +45,8 @@ define([
             };
 
             self.settings.defaultPagingAttr = $.extend({}, pagingAttr, self.settings.defaultPagingAttr);
-            
+
+
             var defaultPagingArguments = {};
             _.each(self.settings.defaultPagingAttr, function(attr, key) {
                 defaultPagingArguments[attr] = null;
@@ -173,7 +173,7 @@ define([
             var self = this;
 
             var pagingArguments = self.pagingArguments();
-            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = null;
+            pagingArguments[self.settings.defaultPagingAttr.page] = null;
 
             self.pagingArguments(pagingArguments);
         };
@@ -210,7 +210,7 @@ define([
                     pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
                 }
             } else {
-                pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = null;
+                pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
                 pagingArguments[self.settings.defaultPagingAttr.orderBy] = newOrderBy;
             }
 
@@ -258,14 +258,9 @@ define([
 
         ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
             var self = this;
-            var pagingArguments = {};
-
-            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = searchResult[self.settings.defaultPagingAttr.pageNumber];
-            pagingArguments[self.settings.defaultPagingAttr.pageSize] = searchResult[self.settings.defaultPagingAttr.pageSize];
-            pagingArguments[self.settings.defaultPagingAttr.orderBy] = searchResult[self.settings.defaultPagingAttr.orderBy];
-            pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = searchResult[self.settings.defaultPagingAttr.orderByDirection];
-
-            return pagingArguments;
+            var pagingArguments = self.pagingArguments();
+            
+            return $.extend({}, pagingArguments, searchResult);
         };
 
         ContentListBaseViewModel.prototype.updatePagingInfo = function(searchResult) {
