@@ -173,7 +173,7 @@ define([
             var self = this;
 
             var pagingArguments = self.pagingArguments();
-            pagingArguments[self.settings.defaultPagingAttr.page] = null;
+            pagingArguments[self.settings.defaultPagingAttr.pageNumber] = null;
 
             self.pagingArguments(pagingArguments);
         };
@@ -190,7 +190,6 @@ define([
 
             var pagingArguments = self.pagingArguments();
 
-            //TODO: pageNumber == convention == not good
             pagingArguments[self.settings.defaultPagingAttr.pageNumber] = (pagingArguments[self.settings.defaultPagingAttr.pageNumber] || 1) + 1;
             self.pagingArguments(pagingArguments);
 
@@ -216,9 +215,7 @@ define([
 
             self.pagingArguments(pagingArguments);
 
-            self.updateSearchArgumentsWithPagingArguments();
-
-            return self.search();
+            return self.searchWithFilters();
         };
 
         ContentListBaseViewModel.prototype.addPropertiesToItems = function(items) {
