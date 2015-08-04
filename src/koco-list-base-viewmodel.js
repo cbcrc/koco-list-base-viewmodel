@@ -180,8 +180,12 @@ define([
 
         ContentListBaseViewModel.prototype.updateSearchArgumentsWithPagingArguments = function() {
             var self = this;
-
-            self.searchArguments = $.extend({}, self.searchArguments, objectUtilities.pickNonFalsy(self.pagingArguments()));
+            var cleanedPagingArguments = objectUtilities.pickNonFalsy(self.pagingArguments());
+            // searchArguments contains observables, pagingArguments doesn't.
+            // final object should contain either all observables or all unwrapped, not a mix, 
+            // because toJS() mapping method gets confused otherwise and drops non-observables. 
+            cleanedPagingArguments = ko.mapping.fromJS(cleanedPagingArguments);
+            self.searchArguments = $.extend({}, self.searchArguments, cleanedPagingArguments);
         };
 
         ContentListBaseViewModel.prototype.goToNextPage = function() {
