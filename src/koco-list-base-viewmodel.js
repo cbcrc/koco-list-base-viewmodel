@@ -55,7 +55,7 @@ define([
             self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
             self.searchArguments = null;
             self.isSearchInProgress = ko.observable(false);
-            self.searchArguments = ko.mapping.fromJS(self.settings.defaultSearchArguments);
+            self.searchArguments = self.settings.defaultSearchArguments;
             self.totalNumberOfItems = ko.observable();
             self.items = ko.observableArray([]);
 
@@ -181,10 +181,6 @@ define([
         ContentListBaseViewModel.prototype.updateSearchArgumentsWithPagingArguments = function() {
             var self = this;
             var cleanedPagingArguments = objectUtilities.pickNonFalsy(self.pagingArguments());
-            // searchArguments contains observables, pagingArguments doesn't.
-            // final object should contain either all observables or all unwrapped, not a mix, 
-            // because toJS() mapping method gets confused otherwise and drops non-observables. 
-            cleanedPagingArguments = ko.mapping.fromJS(cleanedPagingArguments);
             self.searchArguments = $.extend({}, self.searchArguments, cleanedPagingArguments);
         };
 
@@ -203,7 +199,7 @@ define([
         };
 
         ContentListBaseViewModel.prototype.updateOrderBy = function(newOrderBy) {
-            var self = this;
+            var self = this; 
             var pagingArguments = self.pagingArguments();
 
             if (stringUtilities.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
@@ -245,10 +241,7 @@ define([
         ContentListBaseViewModel.prototype.getSearchArguments = function() {
             var self = this;
 
-            var searchArguments = mappingUtilities.toJS(self.searchArguments);
-            searchArguments = objectUtilities.pickNonFalsy(searchArguments);
-
-            return searchArguments;
+            return objectUtilities.pickNonFalsy(self.searchArguments);
         };
 
         ContentListBaseViewModel.prototype.handleUnknownError = function(jqXHR, textStatus, errorThrown) {};
