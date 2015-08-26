@@ -195,7 +195,7 @@ define([
 
             self.updateSearchArgumentsWithPagingArguments();
 
-            return self.search();
+            return self.searchWithFilters();
         };
 
         ContentListBaseViewModel.prototype.updateOrderBy = function(newOrderBy) {
