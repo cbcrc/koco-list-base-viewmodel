@@ -14,7 +14,7 @@ define([
         objectUtilities, stringUtilities, mappingUtilities, Disposer) {
         'use strict';
 
-        //TODO: Utiliser paging-trait !?
+        //TODO: Utiliser paging-trait/part !?
         var ContentListBaseViewModel = function(api, apiResourceName, settings) {
             var self = this;
 
@@ -48,9 +48,9 @@ define([
 
 
             var defaultPagingArguments = {};
-            _.each(self.settings.defaultPagingAttr, function(attr, key) {
+            _.each(self.settings.defaultPagingAttr, function(attr/*, key*/) {
                 defaultPagingArguments[attr] = null;
-            })
+            });
 
             self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
             self.searchArguments = null;
@@ -199,7 +199,7 @@ define([
         };
 
         ContentListBaseViewModel.prototype.updateOrderBy = function(newOrderBy) {
-            var self = this; 
+            var self = this;
             var pagingArguments = self.pagingArguments();
 
             if (stringUtilities.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
@@ -228,7 +228,7 @@ define([
             }
         };
 
-        ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function(item) {
+        ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function(/*item*/) {
             //var self = this;
         };
 
@@ -244,15 +244,15 @@ define([
             return objectUtilities.pickNonFalsy(self.searchArguments);
         };
 
-        ContentListBaseViewModel.prototype.handleUnknownError = function(jqXHR, textStatus, errorThrown) {};
+        ContentListBaseViewModel.prototype.handleUnknownError = function(/*jqXHR, textStatus, errorThrown*/) {};
 
         ContentListBaseViewModel.prototype.dispose = function() {
             this.disposer.dispose();
         };
 
-        ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
+        ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(/*searchResult*/) {
             var self = this;
-            
+
             return self.pagingArguments();
         };
 
@@ -262,7 +262,7 @@ define([
 
             self.pagingArguments(pagingArguments);
             self.updateSearchArgumentsWithPagingArguments();
-        }
+        };
 
         return ContentListBaseViewModel;
     });
