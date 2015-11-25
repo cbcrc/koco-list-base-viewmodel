@@ -79,14 +79,18 @@ define([
             return criteria;
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.onSearchFail = function(jqXhr, textStatus, errorThrown) {
             var self = this;
 
             if (errorThrown !== 'abort') {
-                self.handleUnknownError(jqXhr, textStatus, errorThrown);
+                return self.handleUnknownError(jqXhr, textStatus, errorThrown);
             }
+
+            return $.Deferred().resolve().promise();
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.onSearchSuccess = function(searchResult) {
             var self = this;
 
@@ -118,6 +122,8 @@ define([
             } else {
                 self.items(newItems);
             }
+
+            return $.Deferred().resolve().promise();
         };
 
         ContentListBaseViewModel.prototype.getTotalNumberOfItemsFromSearchResult = function(searchResult) {
@@ -126,6 +132,7 @@ define([
             return searchResult.totalNumberOfItems;
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.searchWithFilters = function() {
             var self = this;
 
@@ -142,6 +149,7 @@ define([
             return self.search();
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.search = function() {
             var self = this;
 
@@ -149,13 +157,12 @@ define([
 
             var apiCriteria = self.toApiCriteria(self.searchArguments);
 
-            var promise = self.api.getJson(self.apiResourceName, {
+            return self.api.getJson(self.apiResourceName, {
                     data: $.param(apiCriteria, true)
                 })
-                .done(function(searchResult) {
+                .then(function(searchResult) {
                     self.onSearchSuccess(searchResult);
-                })
-                .fail(function(jqXhr, textStatus, errorThrown) {
+                }, function(jqXhr, textStatus, errorThrown) {
                     self.onSearchFail(jqXhr, textStatus, errorThrown);
                 })
                 .always(function() {
@@ -165,8 +172,6 @@ define([
 
                     self.isSearchInProgress(false);
                 });
-
-            return promise;
         };
 
         ContentListBaseViewModel.prototype.resetPageNumber = function() {
@@ -184,6 +189,7 @@ define([
             self.searchArguments = $.extend({}, self.searchArguments, cleanedPagingArguments);
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.goToNextPage = function() {
             var self = this;
             self.isPaging(true);
@@ -198,6 +204,7 @@ define([
             return self.search();
         };
 
+        //todo: rename async
         ContentListBaseViewModel.prototype.updateOrderBy = function(newOrderBy) {
             var self = this;
             var pagingArguments = self.pagingArguments();
@@ -244,7 +251,10 @@ define([
             return objectUtilities.pickNonFalsy(self.searchArguments);
         };
 
-        ContentListBaseViewModel.prototype.handleUnknownError = function(/*jqXHR, textStatus, errorThrown*/) {};
+        //todo: rename async
+        ContentListBaseViewModel.prototype.handleUnknownError = function(/*jqXHR, textStatus, errorThrown*/) {
+            return $.Deferred().resolve().promise();
+        };
 
         ContentListBaseViewModel.prototype.dispose = function() {
             this.disposer.dispose();
