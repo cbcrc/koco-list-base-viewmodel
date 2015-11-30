@@ -84,10 +84,10 @@ define([
             var self = this;
 
             if (errorThrown !== 'abort') {
-                return self.handleUnknownError(jqXhr, textStatus, errorThrown);
+                return self.handleUnknownError(...arguments);
             }
 
-            return $.Deferred().resolve().promise();
+            return $.Deferred().reject(...arguments).promise();
         };
 
         //todo: rename async
@@ -123,7 +123,7 @@ define([
                 self.items(newItems);
             }
 
-            return $.Deferred().resolve().promise();
+            return $.Deferred().resolve(...arguments).promise();
         };
 
         ContentListBaseViewModel.prototype.getTotalNumberOfItemsFromSearchResult = function(searchResult) {
@@ -161,9 +161,9 @@ define([
                     data: $.param(apiCriteria, true)
                 })
                 .then(function(searchResult) {
-                    self.onSearchSuccess(searchResult);
+                    return self.onSearchSuccess(searchResult);
                 }, function(jqXhr, textStatus, errorThrown) {
-                    self.onSearchFail(jqXhr, textStatus, errorThrown);
+                    return self.onSearchFail(jqXhr, textStatus, errorThrown);
                 })
                 .always(function() {
                     if (self.settings.pageable) {
