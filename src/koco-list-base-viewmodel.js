@@ -14,7 +14,7 @@ define([
         objectUtilities, stringUtilities, mappingUtilities, Disposer) {
         'use strict';
 
-        //TODO: Utiliser paging-trait/part !?
+        //TODO: Utiliser paging-trait !?
         var ContentListBaseViewModel = function(api, apiResourceName, settings) {
             var self = this;
 
@@ -48,9 +48,9 @@ define([
 
 
             var defaultPagingArguments = {};
-            _.each(self.settings.defaultPagingAttr, function(attr/*, key*/) {
+            _.each(self.settings.defaultPagingAttr, function(attr, key) {
                 defaultPagingArguments[attr] = null;
-            });
+            })
 
             self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
             self.searchArguments = null;
@@ -79,18 +79,14 @@ define([
             return criteria;
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.onSearchFail = function(jqXhr, textStatus, errorThrown) {
             var self = this;
 
             if (errorThrown !== 'abort') {
-                return self.handleUnknownError(...arguments);
+                self.handleUnknownError(jqXhr, textStatus, errorThrown);
             }
-
-            return $.Deferred().reject(...arguments).promise();
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.onSearchSuccess = function(searchResult) {
             var self = this;
 
@@ -122,8 +118,6 @@ define([
             } else {
                 self.items(newItems);
             }
-
-            return $.Deferred().resolve(...arguments).promise();
         };
 
         ContentListBaseViewModel.prototype.getTotalNumberOfItemsFromSearchResult = function(searchResult) {
@@ -132,7 +126,6 @@ define([
             return searchResult.totalNumberOfItems;
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.searchWithFilters = function() {
             var self = this;
 
@@ -149,7 +142,6 @@ define([
             return self.search();
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.search = function() {
             var self = this;
 
@@ -157,13 +149,14 @@ define([
 
             var apiCriteria = self.toApiCriteria(self.searchArguments);
 
-            return self.api.getJson(self.apiResourceName, {
+            var promise = self.api.getJson(self.apiResourceName, {
                     data: $.param(apiCriteria, true)
                 })
-                .then(function(searchResult) {
-                    return self.onSearchSuccess(searchResult);
-                }, function(jqXhr, textStatus, errorThrown) {
-                    return self.onSearchFail(jqXhr, textStatus, errorThrown);
+                .done(function(searchResult) {
+                    self.onSearchSuccess(searchResult);
+                })
+                .fail(function(jqXhr, textStatus, errorThrown) {
+                    self.onSearchFail(jqXhr, textStatus, errorThrown);
                 })
                 .always(function() {
                     if (self.settings.pageable) {
@@ -172,6 +165,8 @@ define([
 
                     self.isSearchInProgress(false);
                 });
+
+            return promise;
         };
 
         ContentListBaseViewModel.prototype.resetPageNumber = function() {
@@ -189,7 +184,6 @@ define([
             self.searchArguments = $.extend({}, self.searchArguments, cleanedPagingArguments);
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.goToNextPage = function() {
             var self = this;
             self.isPaging(true);
@@ -204,9 +198,8 @@ define([
             return self.search();
         };
 
-        //todo: rename async
         ContentListBaseViewModel.prototype.updateOrderBy = function(newOrderBy) {
-            var self = this;
+            var self = this; 
             var pagingArguments = self.pagingArguments();
 
             if (stringUtilities.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
@@ -235,7 +228,7 @@ define([
             }
         };
 
-        ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function(/*item*/) {
+        ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function(item) {
             //var self = this;
         };
 
@@ -251,18 +244,15 @@ define([
             return objectUtilities.pickNonFalsy(self.searchArguments);
         };
 
-        //todo: rename async
-        ContentListBaseViewModel.prototype.handleUnknownError = function(/*jqXHR, textStatus, errorThrown*/) {
-            return $.Deferred().resolve().promise();
-        };
+        ContentListBaseViewModel.prototype.handleUnknownError = function(jqXHR, textStatus, errorThrown) {};
 
         ContentListBaseViewModel.prototype.dispose = function() {
             this.disposer.dispose();
         };
 
-        ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(/*searchResult*/) {
+        ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function(searchResult) {
             var self = this;
-
+            
             return self.pagingArguments();
         };
 
@@ -272,7 +262,7 @@ define([
 
             self.pagingArguments(pagingArguments);
             self.updateSearchArgumentsWithPagingArguments();
-        };
+        }
 
         return ContentListBaseViewModel;
     });
