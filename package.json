@@ -1,29 +1,29 @@
 {
-    "name": "koco-list-base-viewmodel",
-    "version": "0.3.0",
-    "homepage": "https://github.com/cbcrc/koco-list-base-viewmodel",
-    "authors": [
-        "Maxime Séguin <maxime.forget-seguin@radio-canada.ca>"
-    ],
-    "description": "Koco base list view model",
-    "keywords": [
-        "koco",
-        "koco-list",
-        "list-base-viewmodel",
-        "list-viewmodel"
-    ],
-    "main": "src/list-base-viewmodel.js",
-    "scripts": {
-        "build": "rm -rf dist && mkdir dist && cp -r src/* dist && rm -rf dist/*.js && babel src --out-dir dist --modules umd --presets es2015,stage-0"
-    },
-    "license": "MIT",
-    "dependencies": {
-        "knockout": "^3.2.0",
-        "jquery": "^2.1.3",
-        "lodash": "^3.0.0",
-        "koco-object-utilities": "^0.1.0",
-        "koco-string-utilities": "^0.1.0",
-        "koco-mapping-utilities": "^0.1.0",
-        "koco-disposer": "^0.1.0"
-    }
+  "name": "koco-list-base-viewmodel",
+  "version": "1.0.0",
+  "homepage": "https://github.com/cbcrc/koco-list-base-viewmodel",
+  "authors": [
+    "Maxime Séguin <maxime.forget-seguin@radio-canada.ca>"
+  ],
+  "description": "Koco base list view model",
+  "keywords": [
+    "koco",
+    "koco-list",
+    "list-base-viewmodel",
+    "list-viewmodel"
+  ],
+  "main": "src/list-base-viewmodel.js",
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp -r src/* dist && rm -rf dist/*.js && babel src --out-dir dist --modules umd --presets es2015,stage-0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "knockout": "^3.2.0",
+    "jquery": "^2.1.3",
+    "lodash": "^3.0.0",
+    "koco-object-utilities": "^0.1.0",
+    "koco-string-utilities": "^0.1.0",
+    "koco-mapping-utilities": "^0.1.0",
+    "koco-disposer": "^0.1.0"
+  }
 }
