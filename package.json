@@ -18,12 +18,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "knockout": "^3.2.0",
-    "jquery": "^2.1.3",
-    "lodash": "^3.0.0",
-    "koco-object-utilities": "^0.1.0",
-    "koco-string-utilities": "^0.1.0",
-    "koco-mapping-utilities": "^0.1.0",
-    "koco-disposer": "^0.1.0"
+    "jquery": "^2.2.4",
+    "knockout": "^3.4.0",
+    "koco": "^1.0.0",
+    "koco-disposer": "^1.1.0",
+    "koco-mapping-utilities": "^1.1.0",
+    "koco-object-utilities": "^1.1.0",
+    "koco-string-utilities": "^1.1.0",
+    "lodash": "^4.13.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0"
   }
 }
