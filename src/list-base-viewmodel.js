@@ -4,10 +4,10 @@
 import ko from 'knockout';
 import $ from 'jquery';
 import _ from 'lodash';
-import objectUtilities from 'object-utilities';
-import stringUtilities from 'string-utilities';
-import mappingUtilities from 'mapping-utilities';
-import Disposer from 'disposer';
+import objectUtilities from 'koco-object-utilities';
+import stringUtilities from 'koco-string-utilities';
+import mappingUtilities from 'koco-mapping-utilities';
+import Disposer from 'koco-disposer';
 
 
 //TODO: Utiliser paging-trait/part !?
