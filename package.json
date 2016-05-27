@@ -1,6 +1,6 @@
 {
   "name": "koco-list-base-viewmodel",
-  "version": "1.2.0",
+  "version": "1.3.1",
   "homepage": "https://github.com/cbcrc/koco-list-base-viewmodel",
   "authors": [
     "Maxime Séguin <maxime.forget-seguin@radio-canada.ca>"
@@ -18,14 +18,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "jquery": "^2.2.4",
+    "jquery": "^2.1.4",
     "knockout": "^3.4.0",
-    "koco": "^1.0.0",
     "koco-disposer": "^1.1.0",
     "koco-mapping-utilities": "^1.1.0",
     "koco-object-utilities": "^1.1.0",
     "koco-string-utilities": "^1.1.0",
-    "lodash": "^4.13.1"
+    "lodash": "^4.6.1"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
@@ -37,5 +36,8 @@
     "eslint-plugin-import": "^1.8.1",
     "eslint-plugin-jsx-a11y": "^1.2.2",
     "eslint-plugin-react": "^5.1.1"
+  },
+  "peerDependencies": {
+    "koco": "^1.0.0"
   }
 }

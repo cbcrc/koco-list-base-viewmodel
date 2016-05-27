@@ -16,21 +16,21 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _objectUtilities = require('object-utilities');
+var _kocoObjectUtilities = require('koco-object-utilities');
 
-var _objectUtilities2 = _interopRequireDefault(_objectUtilities);
+var _kocoObjectUtilities2 = _interopRequireDefault(_kocoObjectUtilities);
 
-var _stringUtilities = require('string-utilities');
+var _kocoStringUtilities = require('koco-string-utilities');
 
-var _stringUtilities2 = _interopRequireDefault(_stringUtilities);
+var _kocoStringUtilities2 = _interopRequireDefault(_kocoStringUtilities);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
-var _disposer = require('disposer');
+var _kocoDisposer = require('koco-disposer');
 
-var _disposer2 = _interopRequireDefault(_disposer);
+var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51,7 +51,7 @@ var ContentListBaseViewModel = function ContentListBaseViewModel(api, apiResourc
         pageable: true
     };
 
-    self.disposer = new _disposer2.default();
+    self.disposer = new _kocoDisposer2.default();
     self.apiResourceName = apiResourceName;
     self.api = api;
 
@@ -207,7 +207,7 @@ ContentListBaseViewModel.prototype.resetPageNumber = function () {
 
 ContentListBaseViewModel.prototype.updateSearchArgumentsWithPagingArguments = function () {
     var self = this;
-    var cleanedPagingArguments = _objectUtilities2.default.pickNonFalsy(self.pagingArguments());
+    var cleanedPagingArguments = _kocoObjectUtilities2.default.pickNonFalsy(self.pagingArguments());
     self.searchArguments = _jquery2.default.extend({}, self.searchArguments, cleanedPagingArguments);
 };
 
@@ -231,8 +231,8 @@ ContentListBaseViewModel.prototype.updateOrderBy = function (newOrderBy) {
     var self = this;
     var pagingArguments = self.pagingArguments();
 
-    if (_stringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
-        if (_stringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderByDirection], 'ascending')) {
+    if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
+        if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderByDirection], 'ascending')) {
             pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'descending';
         } else {
             pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
@@ -270,7 +270,7 @@ ContentListBaseViewModel.prototype.getItemsFromSearchResult = function (searchRe
 ContentListBaseViewModel.prototype.getSearchArguments = function () {
     var self = this;
 
-    return _objectUtilities2.default.pickNonFalsy(self.searchArguments);
+    return _kocoObjectUtilities2.default.pickNonFalsy(self.searchArguments);
 };
 
 //todo: rename async
