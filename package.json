@@ -24,6 +24,7 @@
     "koco-mapping-utilities": "^1.1.0",
     "koco-object-utilities": "^1.1.0",
     "koco-string-utilities": "^1.1.0",
+    "koco-url-utilities": "^1.1.0",
     "lodash": "^4.6.1"
   },
   "devDependencies": {

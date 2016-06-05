@@ -1,303 +1,302 @@
 (function (global, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(['exports', 'knockout', 'jquery', 'lodash', 'koco-object-utilities', 'koco-string-utilities', 'koco-mapping-utilities', 'koco-disposer'], factory);
-    } else if (typeof exports !== "undefined") {
-        factory(exports, require('knockout'), require('jquery'), require('lodash'), require('koco-object-utilities'), require('koco-string-utilities'), require('koco-mapping-utilities'), require('koco-disposer'));
-    } else {
-        var mod = {
-            exports: {}
-        };
-        factory(mod.exports, global.knockout, global.jquery, global.lodash, global.kocoObjectUtilities, global.kocoStringUtilities, global.kocoMappingUtilities, global.kocoDisposer);
-        global.listBaseViewmodel = mod.exports;
-    }
-})(this, function (exports, _knockout, _jquery, _lodash, _kocoObjectUtilities, _kocoStringUtilities, _kocoMappingUtilities, _kocoDisposer) {
-    'use strict';
+  if (typeof define === "function" && define.amd) {
+    define(['exports', 'knockout', 'jquery', 'lodash', 'koco-object-utilities', 'koco-string-utilities', 'koco-url-utilities', 'koco-mapping-utilities', 'koco-disposer'], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports, require('knockout'), require('jquery'), require('lodash'), require('koco-object-utilities'), require('koco-string-utilities'), require('koco-url-utilities'), require('koco-mapping-utilities'), require('koco-disposer'));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, global.knockout, global.jquery, global.lodash, global.kocoObjectUtilities, global.kocoStringUtilities, global.kocoUrlUtilities, global.kocoMappingUtilities, global.kocoDisposer);
+    global.listBaseViewmodel = mod.exports;
+  }
+})(this, function (exports, _knockout, _jquery, _lodash, _kocoObjectUtilities, _kocoStringUtilities, _kocoUrlUtilities, _kocoMappingUtilities, _kocoDisposer) {
+  'use strict';
 
-    Object.defineProperty(exports, "__esModule", {
-        value: true
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _knockout2 = _interopRequireDefault(_knockout);
+
+  var _jquery2 = _interopRequireDefault(_jquery);
+
+  var _lodash2 = _interopRequireDefault(_lodash);
+
+  var _kocoObjectUtilities2 = _interopRequireDefault(_kocoObjectUtilities);
+
+  var _kocoStringUtilities2 = _interopRequireDefault(_kocoStringUtilities);
+
+  var _kocoUrlUtilities2 = _interopRequireDefault(_kocoUrlUtilities);
+
+  var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
+
+  var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
+
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : {
+      default: obj
+    };
+  }
+
+  //TODO: Utiliser paging-trait/part !?
+  // Copyright (c) CBC/Radio-Canada. All rights reserved.
+  // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+  var ContentListBaseViewModel = function ContentListBaseViewModel(api, apiResourceName, settings) {
+    var self = this;
+
+    if (!api) {
+      throw new Error('ContentListBaseViewModel - missing api');
+    }
+
+    if (!apiResourceName) {
+      throw new Error('ContentListBaseViewModel - missing api resource name');
+    }
+
+    var defaultSettings = {
+      defaultSearchArguments: {},
+      pageable: true
+    };
+
+    self.disposer = new _kocoDisposer2.default();
+    self.apiResourceName = apiResourceName;
+    self.api = api;
+
+    self.settings = _jquery2.default.extend({}, defaultSettings, settings);
+
+    var pagingAttr = {
+      pageNumber: 'pageNumber',
+      pageSize: 'pageSize',
+      orderBy: 'orderBy',
+      orderByDirection: 'orderByDirection'
+    };
+
+    self.settings.defaultPagingAttr = _jquery2.default.extend({}, pagingAttr, self.settings.defaultPagingAttr);
+
+    var defaultPagingArguments = {};
+    _lodash2.default.each(self.settings.defaultPagingAttr, function (attr /*, key*/) {
+      defaultPagingArguments[attr] = null;
     });
 
-    var _knockout2 = _interopRequireDefault(_knockout);
+    self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
+    self.searchArguments = null;
+    self.isSearchInProgress = _knockout2.default.observable(false);
+    self.searchArguments = self.settings.defaultSearchArguments;
+    self.totalNumberOfItems = _knockout2.default.observable();
+    self.items = _knockout2.default.observableArray([]);
 
-    var _jquery2 = _interopRequireDefault(_jquery);
+    self.hasItems = _knockout2.default.pureComputed(function () {
+      return self.items().length > 0;
+    });
+    self.disposer.add(self.hasItems);
 
-    var _lodash2 = _interopRequireDefault(_lodash);
+    self.pagingArguments = _knockout2.default.observable(defaultPagingArguments);
 
-    var _kocoObjectUtilities2 = _interopRequireDefault(_kocoObjectUtilities);
+    self.remainingItemsToLoad = _knockout2.default.observable(false);
 
-    var _kocoStringUtilities2 = _interopRequireDefault(_kocoStringUtilities);
+    self.isPaging = _knockout2.default.observable(false);
+  };
 
-    var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
+  ContentListBaseViewModel.prototype.toApiCriteria = function (searchArguments) {
+    //This is error prone... this means that you have to pass all possible search fields to the
+    //defaultSearchArguments setting in order to be able to use a specific field later (may be acceptable but must be explicit)
+    var criteria = _lodash2.default.pick(searchArguments, this.apiSearchArguments);
 
-    var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
+    return criteria;
+  };
 
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
+  //todo: rename async
+  ContentListBaseViewModel.prototype.onSearchFail = function (ex) {
+    var self = this;
+
+    if (errorThrown !== 'abort') {
+      return self.handleUnknownError.apply(self, arguments);
     }
 
-    //TODO: Utiliser paging-trait/part !?
-    var ContentListBaseViewModel = function ContentListBaseViewModel(api, apiResourceName, settings) {
-        var self = this;
+    return Promise.reject.apply(Promise, arguments);
+  };
 
-        if (!api) {
-            throw new Error('ContentListBaseViewModel - missing api');
+  //todo: rename async
+  ContentListBaseViewModel.prototype.onSearchSuccess = function (searchResult) {
+    var self = this;
+
+    if (self.settings.pageable) {
+      self.updatePagingInfo(searchResult);
+    }
+
+    self.totalNumberOfItems(self.getTotalNumberOfItemsFromSearchResult(searchResult));
+
+    var newItems = self.getItemsFromSearchResult(searchResult);
+
+    self.addPropertiesToItems(newItems);
+
+    if (self.settings.pageable) {
+      var allItems = newItems;
+
+      if (self.isPaging()) {
+        allItems = self.items();
+
+        for (var i = 0; i < newItems.length; i++) {
+
+          allItems.push(newItems[i]);
         }
+      }
+
+      //Doit être fait avant la ligne suivante
+      self.remainingItemsToLoad(allItems.length < searchResult.totalNumberOfItems);
+      self.items(allItems);
+    } else {
+      self.items(newItems);
+    }
 
-        if (!apiResourceName) {
-            throw new Error('ContentListBaseViewModel - missing api resource name');
-        }
+    return Promise.resolve.apply(Promise, arguments);
+  };
 
-        var defaultSettings = {
-            defaultSearchArguments: {},
-            pageable: true
-        };
+  ContentListBaseViewModel.prototype.getTotalNumberOfItemsFromSearchResult = function (searchResult) {
+    //var self = this;
 
-        self.disposer = new _kocoDisposer2.default();
-        self.apiResourceName = apiResourceName;
-        self.api = api;
+    return searchResult.totalNumberOfItems;
+  };
 
-        self.settings = _jquery2.default.extend({}, defaultSettings, settings);
+  //todo: rename async
+  ContentListBaseViewModel.prototype.searchWithFilters = function () {
+    var self = this;
 
-        var pagingAttr = {
-            pageNumber: 'pageNumber',
-            pageSize: 'pageSize',
-            orderBy: 'orderBy',
-            orderByDirection: 'orderByDirection'
-        };
+    if (self.settings.pageable) {
+      self.resetPageNumber();
+    }
 
-        self.settings.defaultPagingAttr = _jquery2.default.extend({}, pagingAttr, self.settings.defaultPagingAttr);
+    self.searchArguments = self.getSearchArguments();
 
-        var defaultPagingArguments = {};
-        _lodash2.default.each(self.settings.defaultPagingAttr, function (attr /*, key*/) {
-            defaultPagingArguments[attr] = null;
-        });
+    if (self.settings.pageable) {
+      self.updateSearchArgumentsWithPagingArguments();
+    }
 
-        self.apiSearchArguments = Object.keys(self.settings.defaultSearchArguments).concat(Object.keys(defaultPagingArguments));
-        self.searchArguments = null;
-        self.isSearchInProgress = _knockout2.default.observable(false);
-        self.searchArguments = self.settings.defaultSearchArguments;
-        self.totalNumberOfItems = _knockout2.default.observable();
-        self.items = _knockout2.default.observableArray([]);
+    return self.search();
+  };
 
-        self.hasItems = _knockout2.default.pureComputed(function () {
-            return self.items().length > 0;
-        });
-        self.disposer.add(self.hasItems);
+  //todo: rename async
+  ContentListBaseViewModel.prototype.search = function () {
+    var self = this;
 
-        self.pagingArguments = _knockout2.default.observable(defaultPagingArguments);
+    self.isSearchInProgress(true);
 
-        self.remainingItemsToLoad = _knockout2.default.observable(false);
+    var apiCriteria = self.toApiCriteria(self.searchArguments);
+    var url = _kocoUrlUtilities2.default.appendParams(self.apiResourceName, apiCriteria, true);
 
-        self.isPaging = _knockout2.default.observable(false);
-    }; // Copyright (c) CBC/Radio-Canada. All rights reserved.
-    // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+    return self.api.fetch(url).then(function (searchResult) {
+      return self.onSearchSuccess(searchResult);
+    }).catch(function (ex) {
+      return self.onSearchFail(ex);
+    }).then(function () {
+      if (self.settings.pageable) {
+        self.isPaging(false);
+      }
 
-    ContentListBaseViewModel.prototype.toApiCriteria = function (searchArguments) {
-        //This is error prone... this means that you have to pass all possible search fields to the
-        //defaultSearchArguments setting in order to be able to use a specific field later (may be acceptable but must be explicit)
-        var criteria = _lodash2.default.pick(searchArguments, this.apiSearchArguments);
+      self.isSearchInProgress(false);
+    });
+  };
 
-        return criteria;
-    };
+  ContentListBaseViewModel.prototype.resetPageNumber = function () {
+    var self = this;
 
-    //todo: rename async
-    ContentListBaseViewModel.prototype.onSearchFail = function (jqXhr, textStatus, errorThrown) {
-        var _$$Deferred;
+    var pagingArguments = self.pagingArguments();
+    pagingArguments[self.settings.defaultPagingAttr.pageNumber] = null;
 
-        var self = this;
+    self.pagingArguments(pagingArguments);
+  };
 
-        if (errorThrown !== 'abort') {
-            return self.handleUnknownError.apply(self, arguments);
-        }
+  ContentListBaseViewModel.prototype.updateSearchArgumentsWithPagingArguments = function () {
+    var self = this;
+    var cleanedPagingArguments = _kocoObjectUtilities2.default.pickNonFalsy(self.pagingArguments());
+    self.searchArguments = _jquery2.default.extend({}, self.searchArguments, cleanedPagingArguments);
+  };
 
-        return (_$$Deferred = _jquery2.default.Deferred()).reject.apply(_$$Deferred, arguments).promise();
-    };
+  //todo: rename async
+  ContentListBaseViewModel.prototype.goToNextPage = function () {
+    var self = this;
+    self.isPaging(true);
 
-    //todo: rename async
-    ContentListBaseViewModel.prototype.onSearchSuccess = function (searchResult) {
-        var _$$Deferred2;
+    var pagingArguments = self.pagingArguments();
 
-        var self = this;
+    pagingArguments[self.settings.defaultPagingAttr.pageNumber] = (pagingArguments[self.settings.defaultPagingAttr.pageNumber] || 1) + 1;
+    self.pagingArguments(pagingArguments);
 
-        if (self.settings.pageable) {
-            self.updatePagingInfo(searchResult);
-        }
+    self.updateSearchArgumentsWithPagingArguments();
 
-        self.totalNumberOfItems(self.getTotalNumberOfItemsFromSearchResult(searchResult));
+    return self.search();
+  };
 
-        var newItems = self.getItemsFromSearchResult(searchResult);
+  //todo: rename async
+  ContentListBaseViewModel.prototype.updateOrderBy = function (newOrderBy) {
+    var self = this;
+    var pagingArguments = self.pagingArguments();
 
-        self.addPropertiesToItems(newItems);
+    if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
+      if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderByDirection], 'ascending')) {
+        pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'descending';
+      } else {
+        pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
+      }
+    } else {
+      pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
+      pagingArguments[self.settings.defaultPagingAttr.orderBy] = newOrderBy;
+    }
 
-        if (self.settings.pageable) {
-            var allItems = newItems;
+    self.pagingArguments(pagingArguments);
 
-            if (self.isPaging()) {
-                allItems = self.items();
+    return self.searchWithFilters();
+  };
 
-                for (var i = 0; i < newItems.length; i++) {
+  ContentListBaseViewModel.prototype.addPropertiesToItems = function (items) {
+    var self = this;
 
-                    allItems.push(newItems[i]);
-                }
-            }
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
 
-            //Doit être fait avant la ligne suivante
-            self.remainingItemsToLoad(allItems.length < searchResult.totalNumberOfItems);
-            self.items(allItems);
-        } else {
-            self.items(newItems);
-        }
-
-        return (_$$Deferred2 = _jquery2.default.Deferred()).resolve.apply(_$$Deferred2, arguments).promise();
-    };
+      self.addPropertiesToSearchResultItem(item);
+    }
+  };
 
-    ContentListBaseViewModel.prototype.getTotalNumberOfItemsFromSearchResult = function (searchResult) {
-        //var self = this;
+  ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function () /*item*/{
+    //var self = this;
+  };
 
-        return searchResult.totalNumberOfItems;
-    };
+  ContentListBaseViewModel.prototype.getItemsFromSearchResult = function (searchResult) {
+    //var self = this;
 
-    //todo: rename async
-    ContentListBaseViewModel.prototype.searchWithFilters = function () {
-        var self = this;
+    return _lodash2.default.compact(searchResult.items);
+  };
 
-        if (self.settings.pageable) {
-            self.resetPageNumber();
-        }
+  ContentListBaseViewModel.prototype.getSearchArguments = function () {
+    var self = this;
 
-        self.searchArguments = self.getSearchArguments();
+    return _kocoObjectUtilities2.default.pickNonFalsy(self.searchArguments);
+  };
 
-        if (self.settings.pageable) {
-            self.updateSearchArgumentsWithPagingArguments();
-        }
+  //todo: rename async
+  ContentListBaseViewModel.prototype.handleUnknownError = function (ex) {
+    return Promise.resolve();
+  };
 
-        return self.search();
-    };
+  ContentListBaseViewModel.prototype.dispose = function () {
+    this.disposer.dispose();
+  };
 
-    //todo: rename async
-    ContentListBaseViewModel.prototype.search = function () {
-        var self = this;
+  ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function () /*searchResult*/{
+    var self = this;
 
-        self.isSearchInProgress(true);
+    return self.pagingArguments();
+  };
 
-        var apiCriteria = self.toApiCriteria(self.searchArguments);
+  ContentListBaseViewModel.prototype.updatePagingInfo = function (searchResult) {
+    var self = this;
+    var pagingArguments = self.getUpdatedPagingArgumentsFromSearchResult(searchResult);
 
-        return self.api.getJson(self.apiResourceName, {
-            data: _jquery2.default.param(apiCriteria, true)
-        }).then(function (searchResult) {
-            return self.onSearchSuccess(searchResult);
-        }, function (jqXhr, textStatus, errorThrown) {
-            return self.onSearchFail(jqXhr, textStatus, errorThrown);
-        }).always(function () {
-            if (self.settings.pageable) {
-                self.isPaging(false);
-            }
+    self.pagingArguments(pagingArguments);
+    self.updateSearchArgumentsWithPagingArguments();
+  };
 
-            self.isSearchInProgress(false);
-        });
-    };
-
-    ContentListBaseViewModel.prototype.resetPageNumber = function () {
-        var self = this;
-
-        var pagingArguments = self.pagingArguments();
-        pagingArguments[self.settings.defaultPagingAttr.pageNumber] = null;
-
-        self.pagingArguments(pagingArguments);
-    };
-
-    ContentListBaseViewModel.prototype.updateSearchArgumentsWithPagingArguments = function () {
-        var self = this;
-        var cleanedPagingArguments = _kocoObjectUtilities2.default.pickNonFalsy(self.pagingArguments());
-        self.searchArguments = _jquery2.default.extend({}, self.searchArguments, cleanedPagingArguments);
-    };
-
-    //todo: rename async
-    ContentListBaseViewModel.prototype.goToNextPage = function () {
-        var self = this;
-        self.isPaging(true);
-
-        var pagingArguments = self.pagingArguments();
-
-        pagingArguments[self.settings.defaultPagingAttr.pageNumber] = (pagingArguments[self.settings.defaultPagingAttr.pageNumber] || 1) + 1;
-        self.pagingArguments(pagingArguments);
-
-        self.updateSearchArgumentsWithPagingArguments();
-
-        return self.search();
-    };
-
-    //todo: rename async
-    ContentListBaseViewModel.prototype.updateOrderBy = function (newOrderBy) {
-        var self = this;
-        var pagingArguments = self.pagingArguments();
-
-        if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderBy], newOrderBy)) {
-            if (_kocoStringUtilities2.default.equalsIgnoreCase(pagingArguments[self.settings.defaultPagingAttr.orderByDirection], 'ascending')) {
-                pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'descending';
-            } else {
-                pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
-            }
-        } else {
-            pagingArguments[self.settings.defaultPagingAttr.orderByDirection] = 'ascending';
-            pagingArguments[self.settings.defaultPagingAttr.orderBy] = newOrderBy;
-        }
-
-        self.pagingArguments(pagingArguments);
-
-        return self.searchWithFilters();
-    };
-
-    ContentListBaseViewModel.prototype.addPropertiesToItems = function (items) {
-        var self = this;
-
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-
-            self.addPropertiesToSearchResultItem(item);
-        }
-    };
-
-    ContentListBaseViewModel.prototype.addPropertiesToSearchResultItem = function () /*item*/{
-        //var self = this;
-    };
-
-    ContentListBaseViewModel.prototype.getItemsFromSearchResult = function (searchResult) {
-        //var self = this;
-
-        return _lodash2.default.compact(searchResult.items);
-    };
-
-    ContentListBaseViewModel.prototype.getSearchArguments = function () {
-        var self = this;
-
-        return _kocoObjectUtilities2.default.pickNonFalsy(self.searchArguments);
-    };
-
-    //todo: rename async
-    ContentListBaseViewModel.prototype.handleUnknownError = function () /*jqXHR, textStatus, errorThrown*/{
-        return _jquery2.default.Deferred().resolve().promise();
-    };
-
-    ContentListBaseViewModel.prototype.dispose = function () {
-        this.disposer.dispose();
-    };
-
-    ContentListBaseViewModel.prototype.getUpdatedPagingArgumentsFromSearchResult = function () /*searchResult*/{
-        var self = this;
-
-        return self.pagingArguments();
-    };
-
-    ContentListBaseViewModel.prototype.updatePagingInfo = function (searchResult) {
-        var self = this;
-        var pagingArguments = self.getUpdatedPagingArgumentsFromSearchResult(searchResult);
-
-        self.pagingArguments(pagingArguments);
-        self.updateSearchArgumentsWithPagingArguments();
-    };
-
-    exports.default = ContentListBaseViewModel;
+  exports.default = ContentListBaseViewModel;
 });
