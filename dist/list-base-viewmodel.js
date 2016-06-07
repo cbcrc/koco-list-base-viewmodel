@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['exports', 'knockout', 'jquery', 'lodash', 'koco-object-utilities', 'koco-string-utilities', 'koco-url-utilities', 'koco-mapping-utilities', 'koco-disposer'], factory);
+    define(['exports', 'knockout', 'jquery', 'lodash', 'koco-object-utilities', 'koco-string-utilities', 'koco-url-utilities', 'koco-disposer'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require('knockout'), require('jquery'), require('lodash'), require('koco-object-utilities'), require('koco-string-utilities'), require('koco-url-utilities'), require('koco-mapping-utilities'), require('koco-disposer'));
+    factory(exports, require('knockout'), require('jquery'), require('lodash'), require('koco-object-utilities'), require('koco-string-utilities'), require('koco-url-utilities'), require('koco-disposer'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.knockout, global.jquery, global.lodash, global.kocoObjectUtilities, global.kocoStringUtilities, global.kocoUrlUtilities, global.kocoMappingUtilities, global.kocoDisposer);
+    factory(mod.exports, global.knockout, global.jquery, global.lodash, global.kocoObjectUtilities, global.kocoStringUtilities, global.kocoUrlUtilities, global.kocoDisposer);
     global.listBaseViewmodel = mod.exports;
   }
-})(this, function (exports, _knockout, _jquery, _lodash, _kocoObjectUtilities, _kocoStringUtilities, _kocoUrlUtilities, _kocoMappingUtilities, _kocoDisposer) {
+})(this, function (exports, _knockout, _jquery, _lodash, _kocoObjectUtilities, _kocoStringUtilities, _kocoUrlUtilities, _kocoDisposer) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -29,8 +29,6 @@
 
   var _kocoUrlUtilities2 = _interopRequireDefault(_kocoUrlUtilities);
 
-  var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
-
   var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
 
   function _interopRequireDefault(obj) {
@@ -40,9 +38,6 @@
   }
 
   //TODO: Utiliser paging-trait/part !?
-  // Copyright (c) CBC/Radio-Canada. All rights reserved.
-  // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
   var ContentListBaseViewModel = function ContentListBaseViewModel(api, apiResourceName, settings) {
     var self = this;
 
@@ -96,7 +91,8 @@
     self.remainingItemsToLoad = _knockout2.default.observable(false);
 
     self.isPaging = _knockout2.default.observable(false);
-  };
+  }; // Copyright (c) CBC/Radio-Canada. All rights reserved.
+  // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
   ContentListBaseViewModel.prototype.toApiCriteria = function (searchArguments) {
     //This is error prone... this means that you have to pass all possible search fields to the
@@ -108,13 +104,7 @@
 
   //todo: rename async
   ContentListBaseViewModel.prototype.onSearchFail = function (ex) {
-    var self = this;
-
-    if (errorThrown !== 'abort') {
-      return self.handleUnknownError.apply(self, arguments);
-    }
-
-    return Promise.reject.apply(Promise, arguments);
+    return this.handleUnknownError(ex);
   };
 
   //todo: rename async
@@ -277,7 +267,7 @@
 
   //todo: rename async
   ContentListBaseViewModel.prototype.handleUnknownError = function (ex) {
-    return Promise.resolve();
+    return Promise.reject(ex);
   };
 
   ContentListBaseViewModel.prototype.dispose = function () {

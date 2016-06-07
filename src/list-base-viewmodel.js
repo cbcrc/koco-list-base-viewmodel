@@ -7,7 +7,6 @@ import _ from 'lodash';
 import objectUtilities from 'koco-object-utilities';
 import stringUtilities from 'koco-string-utilities';
 import urls from 'koco-url-utilities';
-import mappingUtilities from 'koco-mapping-utilities';
 import Disposer from 'koco-disposer';
 
 
@@ -78,13 +77,7 @@ ContentListBaseViewModel.prototype.toApiCriteria = function(searchArguments) {
 
 //todo: rename async
 ContentListBaseViewModel.prototype.onSearchFail = function(ex) {
-  var self = this;
-
-  if (errorThrown !== 'abort') {
-    return self.handleUnknownError(...arguments);
-  }
-
-  return Promise.reject(...arguments);
+    return this.handleUnknownError(ex);
 };
 
 //todo: rename async
@@ -246,7 +239,7 @@ ContentListBaseViewModel.prototype.getSearchArguments = function() {
 
 //todo: rename async
 ContentListBaseViewModel.prototype.handleUnknownError = function(ex) {
-  return Promise.resolve();
+  return Promise.reject(ex);
 };
 
 ContentListBaseViewModel.prototype.dispose = function() {
