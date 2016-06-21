@@ -156,7 +156,10 @@ ContentListBaseViewModel.prototype.search = function() {
         self.isPaging(false);
       }
 
-      self.isSearchInProgress(false);
+      // todo: hack for problem with triggerWhenScrolledToBottom which fires mutltiple times (find a better solution)
+      setTimeout(() => {
+        self.isSearchInProgress(false);
+      }, 50);
     });
 };
 

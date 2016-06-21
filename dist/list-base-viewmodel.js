@@ -184,7 +184,10 @@
         self.isPaging(false);
       }
 
-      self.isSearchInProgress(false);
+      // todo: hack for problem with triggerWhenScrolledToBottom which fires mutltiple times (find a better solution)
+      setTimeout(function () {
+        self.isSearchInProgress(false);
+      }, 50);
     });
   };
 
