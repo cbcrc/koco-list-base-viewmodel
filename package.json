@@ -40,6 +40,6 @@
     "eslint-plugin-react": "^5.1.1"
   },
   "peerDependencies": {
-    "koco": "^1.0.0"
+    "koco": "^2.0.0"
   }
 }
